@@ -1,0 +1,6 @@
+{
+  "global": {
+    "cmd-alt-=": "mod.open:pane-equalize-width",
+    "cmd-alt-shift-=": "mod.open:pane-equalize-height"
+  }
+}
