@@ -1,5 +1,5 @@
-// Floating drawer with two buttons that even out the focused tab's panes.
-// It only opens the key mods (pane-equalize-width/height), so the work lives
+// Floating drawer with four buttons that even out the focused tab's panes.
+// It only opens the key mods (pane-equalize-width/height/row/column), so the work lives
 // in one place. Placed by a layout as a floating block with `peek`:
 // each row keeps its icon on the edge side, so the peeking strip shows icons.
 
@@ -10,6 +10,8 @@ import { placement, run, theme } from "herdr";
 const BUTTONS = [
   { axis: "width", label: "Even widths", key: "⌘⌥=" },
   { axis: "height", label: "Even heights", key: "⌘⌥⇧=" },
+  { axis: "row", label: "All side by side", key: "⌘⌥\\" },
+  { axis: "column", label: "All stacked", key: "⌘⌥-" },
 ];
 
 export default class PaneEqualizeBar extends View {
@@ -19,9 +21,12 @@ export default class PaneEqualizeBar extends View {
     const text = v_flex()
       .child(div().text_size(12).text_color(t.foreground).child(b.label))
       .child(div().text_size(10).text_color(t.muted).child(b.key));
-    // gap is wide so the layout's peek strip (40px) shows the icon alone
+    // gap is wide so the layout's peek strip (40px) shows the icon alone.
+    // Labels differ in width: justify_between pins every icon to the edge
+    // side, or short rows put their icon outside the peek strip.
     return h_flex()
       .id(`eq-${b.axis}`)
+      .justify_between()
       .gap(18)
       .px(9)
       .py(6)

@@ -1,6 +1,8 @@
 {
   "global": {
     "cmd-alt-=": "mod.open:pane-equalize-width",
-    "cmd-alt-shift-=": "mod.open:pane-equalize-height"
+    "cmd-alt-shift-=": "mod.open:pane-equalize-height",
+    "cmd-alt-\\": "mod.open:pane-equalize-row",
+    "cmd-alt--": "mod.open:pane-equalize-column"
   }
 }

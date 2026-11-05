@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Even out pane widths or heights in one Herdr app tab.
+"""Even out pane widths or heights in one Herdr app tab, or put every pane of
+the tab side by side (row) or stacked (column) at equal sizes.
 
-Usage: equalize.py width|height <tab-id> [machine]
+Usage: equalize.py width|height|row|column <tab-id> [machine]
 
 The app has no pane resize command (0.1.12), so this edits the split tree in
 herdr-core's "herdr-app" document directly. That document is undocumented:
@@ -16,6 +17,8 @@ import sys
 
 DOC = "herdr-app"
 AXIS_NODE = {"width": "row", "height": "column"}
+FLATTEN = ("row", "column")
+MODES = (*AXIS_NODE, *FLATTEN)
 KNOWN = {"row", "column", "block"}
 
 
@@ -64,6 +67,32 @@ def equalize(root, axis):
     return tree
 
 
+def leaves(node):
+    """The panes under node in tree order: inside each split, left before right
+    and top before bottom. A 2x2 grid of two columns gives left column first."""
+    if node["type"] == "block":
+        return [node]
+    return [b for k in node["children"] for b in leaves(k)]
+
+
+def flatten(root, kind):
+    """Return a copy of root as one `kind` container holding every pane, equal sizes.
+
+    The root keeps its id and other keys (the app names it after the tab);
+    the inner containers go away.
+    """
+    span(root, kind)  # validate the whole tree before touching anything
+    if root["type"] == "block":
+        return copy.deepcopy(root)
+    tree = copy.deepcopy(root)
+    panes = leaves(tree)
+    for b in panes:
+        b["size"] = {"weight": 1 / len(panes)}
+    tree["type"] = kind
+    tree["children"] = panes
+    return tree
+
+
 def find_tab(value, tab_id):
     for space in value.get("spaces", []):
         for tab in space.get("tabs", []):
@@ -89,15 +118,23 @@ def rpc(method, params):
     return reply["result"]
 
 
-def apply(axis, tab_id, machine=None):
+def local_id(tab_id, machine):
+    """The app shows a remote tab as "<machine>/<id>"; that machine's own
+    document stores the bare id."""
+    prefix = f"{machine}/" if machine else ""
+    return tab_id[len(prefix):] if prefix and tab_id.startswith(prefix) else tab_id
+
+
+def apply(mode, tab_id, machine=None):
     on = {"on": machine} if machine else {}
+    tab_id = local_id(tab_id, machine)
     for attempt in (1, 2):
         got = rpc("doc.get", {"name": DOC, **on})
         value = got["value"]
         tab = find_tab(value, tab_id)
         if "root" not in tab:
             raise Unknown(f"tab {tab_id!r} has no root")
-        new_root = equalize(tab["root"], axis)
+        new_root = flatten(tab["root"], mode) if mode in FLATTEN else equalize(tab["root"], mode)
         if new_root == tab["root"]:
             return "already even"
         print(json.dumps(tab["root"]), file=sys.stderr)  # rollback copy
@@ -115,7 +152,7 @@ def main(argv):
     if any(a in ('-h', '--help') for a in argv[1:]):
         print(__doc__.strip())
         return 0
-    if len(argv) not in (3, 4) or argv[1] not in AXIS_NODE:
+    if len(argv) not in (3, 4) or argv[1] not in MODES:
         print(__doc__.strip(), file=sys.stderr)
         return 2
     try:

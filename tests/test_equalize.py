@@ -72,11 +72,41 @@ class Equalize(unittest.TestCase):
         with self.assertRaises(eq.Unknown):
             eq.equalize(root, "width")
 
+    def test_grid_flattens_to_one_row_in_reading_order(self):
+        # a 2x2 grid as the app writes it: row of two columns
+        c0 = node("column", "c0", [block("a", 0.5), block("b", 0.5)], 0.5)
+        c1 = node("column", "c1", [block("c", 0.7), block("d", 0.3)], 0.5)
+        root = node("row", "tab", [c0, c1])
+        got = eq.flatten(root, "row")
+        self.assertEqual((got["type"], got["id"]), ("row", "tab"))
+        self.assertEqual([k["id"] for k in got["children"]], ["a", "b", "c", "d"])
+        self.assertEqual(weights(got), [0.25] * 4)
+        got = eq.flatten(root, "column")
+        self.assertEqual(got["type"], "column")
+        self.assertEqual(weights(got), [0.25] * 4)
+        self.assertEqual(root["children"][0]["type"], "column", "input must not change")
+
+    def test_flatten_twice_changes_nothing(self):
+        root = node("row", "tab", [block("a", 0.6), node("column", "c", [block("b", 1), block("c", 1)], 0.4)])
+        once = eq.flatten(root, "row")
+        self.assertEqual(eq.flatten(once, "row"), once)
+
+    def test_flatten_refuses_unknown_nodes(self):
+        root = node("row", "tab", [block("a", 0.5), {"type": "stack", "id": "s", "size": {"weight": 0.5}}])
+        with self.assertRaises(eq.Unknown):
+            eq.flatten(root, "row")
+
     def test_find_tab(self):
         value = {"spaces": [{"tabs": [{"id": "t1", "root": block("a", 1)}]}]}
         self.assertEqual(eq.find_tab(value, "t1")["id"], "t1")
         with self.assertRaises(eq.Unknown):
             eq.find_tab(value, "nope")
+
+    def test_remote_tab_id_drops_machine_prefix(self):
+        self.assertEqual(eq.local_id("kc-mac-pro/tb1", "kc-mac-pro"), "tb1")
+        self.assertEqual(eq.local_id("tb1", "kc-mac-pro"), "tb1")
+        self.assertEqual(eq.local_id("tb1", None), "tb1")
+        self.assertEqual(eq.local_id("other/tb1", "kc-mac-pro"), "other/tb1")
 
 
 if __name__ == "__main__":

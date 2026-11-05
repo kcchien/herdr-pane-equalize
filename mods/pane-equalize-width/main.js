@@ -1,7 +1,8 @@
 // Key: mod.open:pane-equalize-width. The overlay closes itself at once and runs
 // equalize.py (in mods/pane-equalize-width/) on the focused tab. The app has no pane
 // resize command, so the script edits herdr-core's layout doc. Mods cannot
-// import across folders, so pane-equalize-width/height differ only in AXIS.
+// import across folders, so the four pane-equalize-width/height/row/column
+// mods differ only in AXIS.
 
 import { View, div } from "gpui-kit";
 import { appHome, closeOverlay, exec, focused, notify, props, spaces, window as appWindow } from "herdr";
