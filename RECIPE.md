@@ -4,7 +4,7 @@ Four keys and a small drawer that even out the panes of the shown tab. Press one
 
 ![Pane equalize](preview.png)
 
-The preview shows one tab before (top: 1/2, 1/4, 1/4) and after (bottom: 1/3 each). The drawer is the small strip at the right edge.
+The preview shows one tab before (top: pane A on the left, B over C on the right) and after "All side by side" (bottom: A, B and C at 1/3 each). The drawer is the small strip at the right edge, with its four icons.
 
 ## What you see
 
