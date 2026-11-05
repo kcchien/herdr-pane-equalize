@@ -58,7 +58,7 @@ The preview shows one tab before (top: pane A on the left, B over C on the right
 - Mods cannot import from other mod folders, so the four key mods repeat the same code. Keep them in step.
 - The app shows a tab on another machine as `<machine>/<id>`. That machine's document stores only `<id>`. The script drops the prefix before it looks for the tab.
 - Rows in the drawer have labels of different widths. Without `justify_between` on each row, the icons of short rows move out of the 40 px peek strip.
-- Tested on Herdr 0.1.12. A future version may add a resize command or change the document.
+- Tested on Herdr 0.1.13. A future version may add a resize command or change the document.
 
 ## Done when
 

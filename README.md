@@ -11,7 +11,7 @@ Herdr has no pane resize command yet. A Python script edits the tab's split tree
 - This mod runs a program: `python3` (`python` on Windows) runs `equalize.py`, and the script runs `hc`.
 - It writes to herdr-core's `herdr-app` document. That document is not documented. The script stops when it sees a shape it does not know.
 - It does not reach the network. It reads no files outside the Herdr app folder.
-- Tested on Herdr 0.1.12. You need Python 3.
+- Tested on Herdr 0.1.13. You need Python 3.
 
 ## Install with an agent
 

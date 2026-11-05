@@ -4,7 +4,7 @@ the tab side by side (row) or stacked (column) at equal sizes.
 
 Usage: equalize.py width|height|row|column <tab-id> [machine]
 
-The app has no pane resize command (0.1.12), so this edits the split tree in
+The app has no pane resize command (0.1.13), so this edits the split tree in
 herdr-core's "herdr-app" document directly. That document is undocumented:
 any node shape we do not recognise aborts the write instead of guessing.
 """
